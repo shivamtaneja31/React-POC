@@ -1,0 +1,51 @@
+@startuml Enhanced Architecture Diagram
+
+!define AZURE_COLOR #0072C6
+!define GRAFANA_COLOR #F46800
+!define USER_COLOR #85BBF0
+!define GITHUB_COLOR #24292E
+
+skinparam componentStyle uml2
+skinparam component {
+    BackgroundColor<<Azure>> AZURE_COLOR
+    BorderColor<<Azure>> #0063B1
+    BackgroundColor<<Grafana>> GRAFANA_COLOR
+    BorderColor<<Grafana>> #D35A00
+    BackgroundColor<<User>> USER_COLOR
+    BorderColor<<User>> #5E9ED6
+    BackgroundColor<<GitHub>> GITHUB_COLOR
+    BorderColor<<GitHub>> #1B1F23
+}
+
+skinparam linetype ortho
+
+actor "Users" as users
+
+rectangle "Azure Cloud" {
+    component "Azure CDN" as cdn <<Azure>> {
+        [JAXI React App] as react_app
+    }
+
+    component "Azure Active Directory" as azure_ad <<Azure>>
+    
+    component "Azure Container Apps" as aca <<Azure>> {
+        [Microservices] as microservices
+        [Grafana] as grafana <<Grafana>>
+    }
+    
+    component "Azure API Management" as apim <<Azure>>
+    component "Azure Monitor" as azure_monitor <<Azure>>
+}
+
+rectangle "GitHub" {
+    [CI/CD Pipeline] as cicd <<GitHub>>
+}
+
+users -[#000000]-> cdn : Access
+cdn -[#000000]-> apim : API Requests
+apim -[#000000]-> aca : Route Requests
+microservices -[#000000]-> azure_ad : Authenticate
+grafana -[#000000]-> azure_monitor : Monitor
+cicd -[#000000]-> aca : Deploy
+
+@enduml

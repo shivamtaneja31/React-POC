@@ -1,0 +1,79 @@
+@startuml
+actor "DevOps Engineer" as DevOps
+participant "CI/CD Pipeline" as Pipeline
+participant "Testing Service" as Testing
+participant "Security Service" as Security
+participant "Config Service" as Config
+participant "Deployment Service" as Deploy
+participant "Monitoring Service" as Monitor
+database "Database" as DB
+
+note right of DevOps
+    Deployment Information:
+    - Version Number
+    - Release Notes
+    - Documentation
+end note
+
+group Pre-Deployment
+    DevOps -> Pipeline: Initiate Code Freeze
+    Pipeline -> Testing: Run Unit & Integration Tests
+    Testing --> Pipeline: Test Results
+    alt Tests Failed
+        Pipeline --> DevOps: Report Issues
+        DevOps -> Testing: Fix and Re-run Tests
+    end
+end
+
+group Security Review
+    Pipeline -> Security: Request Compliance Review
+    Security --> Pipeline: Compliance Status
+    alt Compliance Issues
+        Pipeline --> DevOps: Report Compliance Issues
+        DevOps -> Security: Fix and Re-review
+    end
+end
+
+group Configuration
+    Pipeline -> Config: Sync Configurations
+    Config -> Deploy: Update Environment Settings
+    Deploy -> Config: Configure API Gateway & CDN
+    Config --> Pipeline: Configuration Complete
+end
+
+group Staging Deployment
+    Pipeline -> Deploy: Deploy to Staging
+    Deploy -> Testing: Run Smoke Tests
+    Testing --> Pipeline: Test Results
+    alt Smoke Tests Failed
+        Pipeline --> DevOps: Report Issues
+        DevOps -> Testing: Fix and Re-run Tests
+    end
+end
+
+group Production Deployment
+    Pipeline -> Deploy: Deploy to Production
+    Deploy -> DB: Backup Database
+    Deploy -> Deploy: Apply Terraform Changes
+    Deploy -> Deploy: Execute Rolling Update
+end
+
+group Validation
+    Pipeline -> Monitor: Start Health Checks
+    Monitor -> Testing: Run E2E Tests
+    Testing --> Pipeline: Validation Results
+    alt Validation Failed
+        Pipeline -> Deploy: Initiate Rollback
+        Deploy -> Deploy: Restore Previous Version
+        Deploy -> DB: Restore Database
+        Deploy --> DevOps: Notify Rollback Complete
+    end
+end
+
+group Documentation
+    DevOps -> Pipeline: Submit Documentation
+    Pipeline -> Config: Update Knowledge Base
+    Config --> DevOps: Confirm Documentation
+end
+
+@enduml

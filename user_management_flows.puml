@@ -1,0 +1,82 @@
+@startuml User Management Flows
+
+actor Admin
+participant "Auth Service" as AuthService
+participant "Azure AD" as AzureAD
+participant "Email Service" as EmailService
+participant "Enterprise App" as EnterpriseApp
+actor "User" as User
+actor "Guest User" as GuestUser
+
+' Admin Login Flow
+group Admin Login
+    Admin -> AuthService: Login request with credentials
+    AuthService -> AzureAD: Validate credentials
+    AzureAD --> AuthService: Return token after validation
+    AuthService --> Admin: Provide access token
+    note right of Admin: Now authenticated
+end
+
+' Invite Flow (Admin Inviting Other Users)
+group Invite Existing AD Member
+    Admin -> AuthService: Send invite request for existing AD member
+    AuthService -> AzureAD: Check user existence and validity
+    AzureAD --> AuthService: Confirm user details
+    AuthService -> EmailService: Send invitation email
+    EmailService -> User: Receive invitation
+end
+
+group Invite Guest User
+    Admin -> AuthService: Send invite request for guest user
+    AuthService -> AzureAD: Create guest user entry
+    AzureAD --> AuthService: Confirm guest user creation
+    AuthService -> EmailService: Send invitation email
+    EmailService -> GuestUser: Receive invite email
+end
+
+' Admin Editing Roles of Existing User
+group Edit User Roles
+    Admin -> AuthService: Request to update user roles
+    AuthService -> AzureAD: Verify user identity and existing roles
+    AuthService -> EnterpriseApp: Request to update user roles
+    EnterpriseApp --> AuthService: Confirm role update
+    AuthService --> Admin: Confirm successful role update
+end
+
+' Delete User Flow
+group Delete User
+    Admin -> AuthService: Request to delete user
+    AuthService -> EnterpriseApp: Request user removal from app
+    EnterpriseApp --> AuthService: Confirm user removal
+    AuthService -> AzureAD: Remove user from app-specific group
+    AzureAD --> AuthService: Confirm group update
+    AuthService --> Admin: Confirm user removal from enterprise app
+end
+
+' Register (Add User) Flow
+group Register (Add User)
+    Admin -> AuthService: Request to register new user
+    AuthService -> AzureAD: Create new user
+    AzureAD --> AuthService: Confirm user creation
+    AuthService -> EmailService: Send welcome email
+    EmailService -> User: Receive welcome email
+end
+
+' Update User Flow
+group Update User
+    Admin -> AuthService: Request to update user details
+    AuthService -> AzureAD: Update user information
+    AzureAD --> AuthService: Confirm update
+    AuthService --> Admin: Confirm successful update
+end
+
+' Modify User Roles Flow
+group Modify User Roles
+    Admin -> AuthService: Request to modify user roles
+    AuthService -> AzureAD: Verify and update roles
+    AuthService -> EnterpriseApp: Update user roles
+    EnterpriseApp --> AuthService: Confirm role modification
+    AuthService --> Admin: Notify successful role modification
+end
+
+@enduml

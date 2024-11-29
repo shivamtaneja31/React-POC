@@ -1,0 +1,73 @@
+@startuml
+actor "User" as User
+participant "App Component" as App
+participant "ThemeProvider" as Theme
+participant "ErrorBoundary" as Error
+participant "Pages" as Pages
+participant "Components" as Components
+participant "Custom Hooks" as Hooks
+participant "HOCs" as HOCs
+participant "Local Storage" as Storage
+participant "API" as API
+
+note right of Pages
+    Contains:
+    - Home Page
+    - About Page
+    - User Form Page
+    - Data Fetcher Demo
+end note
+
+note right of Components
+    Contains:
+    - Header
+    - DataFetcher
+    - UserForm
+end note
+
+note right of Hooks
+    Contains:
+    - useLocalStorage
+    - useTheme
+end note
+
+note right of HOCs
+    Contains:
+    - withLoading
+    - withErrorBoundary
+end note
+
+group Application Initialization
+    App -> Theme: Initialize Theme Context
+    Theme -> Hooks: Setup Theme Hook
+    App -> Error: Wrap Application
+end
+
+group Navigation Flow
+    User -> Components: Interact with Header
+    Components -> Pages: Navigate to Page
+    Pages -> App: Update Route
+end
+
+group Data Management
+    Components -> Hooks: Use Local Storage
+    Hooks -> Storage: Persist Data
+    Components -> HOCs: Enhanced by withLoading
+    HOCs -> API: Fetch Data
+    API --> Components: Return Response
+end
+
+group Theme Management
+    User -> Components: Toggle Theme
+    Components -> Theme: Update Theme
+    Theme -> App: Apply New Theme
+end
+
+group Form Handling
+    User -> Pages: Access Form Page
+    Pages -> Components: Load UserForm
+    Components -> Hooks: Use Storage Hook
+    Hooks -> Storage: Save Form Data
+end
+
+@enduml

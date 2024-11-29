@@ -1,0 +1,62 @@
+@startuml Azure Service Creation Flow
+
+actor Developer
+participant "GitHub Repository" as GitRepo
+participant "GitHub Actions" as GHActions
+participant "Terraform" as TF
+participant "Azure" as Azure
+participant "Azure Container Registry" as ACR
+participant "Azure API Management" as APIM
+participant "Azure Container Apps" as ACA
+participant "Grafana" as Grafana
+participant "Azure Monitor" as AzureMonitor
+
+Developer -> GitRepo: Push Code
+GitRepo -> GHActions: Trigger Workflow
+
+group Infrastructure Provisioning
+    GHActions -> TF: Run Terraform Plan
+    TF -> Azure: Preview Changes
+    GHActions -> TF: Run Terraform Apply
+    TF -> Azure: Create/Update Resources
+    TF -> Azure: Manage State in Azure Storage
+end
+
+group App Container Deployment
+    GHActions -> GHActions: Build Docker Images
+    GHActions -> ACR: Push Images
+end
+
+group Application Deployment
+    GHActions -> TF: Deploy Containers to ACA
+    TF -> ACA: Deploy Containerized Apps
+    TF -> APIM: Configure API Gateway
+    TF -> Azure: Setup Networking
+end
+
+group APIM Setup
+    TF -> APIM: Define API Routing and Policies
+    TF -> APIM: Setup Authentication and Throttling
+    TF -> APIM: Configure Versioning and Rollback
+end
+
+group ACA Deployment
+    TF -> ACA: Deploy Containers to Environments
+    TF -> ACA: Set Scaling Policies (KEDA)
+end
+
+group Grafana Automation
+    TF -> Grafana: Provision Grafana Instance
+    TF -> Grafana: Connect to Data Sources
+    TF -> Grafana: Setup Dashboards
+    TF -> Grafana: Configure Alerting Rules
+end
+
+group Monitoring & Logging Setup
+    TF -> AzureMonitor: Integrate with Deployed Services
+    ACA -> AzureMonitor: Collect Logs
+    APIM -> AzureMonitor: Collect Logs
+    TF -> AzureMonitor: Setup Log Analytics Workspace
+end
+
+@enduml

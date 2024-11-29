@@ -1,0 +1,57 @@
+@startuml Client Presentation: JAXI React App Architecture
+
+!define AZURE_COLOR #0072C6
+!define REACT_COLOR #61DAFB
+!define GRAFANA_COLOR #F46800
+!define NSG_COLOR #8BC34A
+
+skinparam componentStyle uml2
+skinparam linetype ortho
+
+actor "Users" as users
+actor "Admin" as admin
+
+rectangle "Azure Cloud" {
+    rectangle "Public Subnet" {
+        component "Azure CDN" as cdn
+        component "Kong API Gateway\nJWT Auth" as kong
+    }
+    
+    rectangle "Private Subnet" {
+        rectangle "Azure Container Apps" as aca {
+            component "JAXI React App" as react_app
+            component "Microservices" as microservices
+            component "Grafana" as grafana
+        }
+        database "Azure Storage" as storage
+        queue "Azure Service Bus" as service_bus
+    }
+    
+    component "Azure API Management" as apim
+    component "Azure Active Directory" as aad
+    component "Azure Monitor" as azure_monitor
+    component "Azure Container Registry" as acr
+    
+    rectangle "GitHub" {
+        component [CI/CD Pipeline] as cicd
+    }
+}
+
+users - cdn
+admin - cdn
+cdn - kong
+kong - apim
+apim - microservices
+microservices - aad
+microservices - storage
+microservices - service_bus
+grafana - azure_monitor
+cicd - acr
+acr - aca
+
+legend right
+  NSG: Network Security Group
+  Public and Private Subnets are protected by NSGs
+endlegend
+
+@enduml
