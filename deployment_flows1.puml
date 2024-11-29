@@ -1,0 +1,95 @@
+@startuml
+'Theme
+skinparam ActivityBackgroundColor LightBlue
+skinparam ActivityBorderColor Blue
+skinparam ArrowColor Blue
+
+start
+
+:Pre-Deployment Checklist;
+:Code Freeze;
+
+repeat
+  if (Code Freeze Complete?) then (yes)
+    break
+  else (no)
+    :Wait for Code Freeze;
+  endif
+repeat while
+
+:Unit & Integration Testing;
+
+repeat
+  if (Tests Passed?) then (yes)
+    break
+  else (no)
+    :Fix Issues and Re-run Tests;
+  endif
+repeat while
+
+:Security & Compliance Review;
+
+repeat
+  if (Compliance Approved?) then (yes)
+    break
+  else (no)
+    :Fix Compliance Issues and Re-review;
+  endif
+repeat while
+
+:Configuration Sync;
+:Approval Gate;
+:Release Notes;
+:Assign Version Number;
+:Document Features, Bug Fixes, Dependencies;
+
+:Deployment Preparation;
+:Infrastructure Review;
+:Database Backup;
+:Environment Configuration;
+:API Gateway & CDN Setup;
+
+:Deployment Execution Steps;
+:Notify Stakeholders;
+:Send Maintenance Notification;
+:Deploy to Staging;
+
+repeat
+  :Run Smoke Tests;
+  if (Smoke Tests Passed?) then (yes)
+    break
+  else (no)
+    :Fix Issues and Re-run Smoke Tests;
+  endif
+repeat while
+
+:Deploy to Production;
+:Apply Terraform Changes;
+:Rolling Update Strategy;
+
+:Post-Deployment Validation;
+:Automated Health Checks;
+:End-to-End Testing;
+:Monitoring & Alerting;
+
+if (Validation Successful?) then (yes)
+  :Obtain Sign-Off and Complete Deployment;
+else (no)
+  :Consider Rollback;
+  if (Rollback Required?) then (yes)
+    :Rollback Procedure;
+    :Re-deploy Previous Version;
+    :Rollback Terraform;
+    :Restore Database Backup;
+    :Post-Rollback Testing;
+    :Notify Stakeholders of Rollback;
+  endif
+endif
+
+:Documentation & Handover;
+:Document Release Summary;
+:Post-Deployment Review;
+:Update Knowledge Base;
+
+stop
+@enduml

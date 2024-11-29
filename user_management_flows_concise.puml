@@ -1,0 +1,48 @@
+@startuml User Management Flows (Concise)
+
+actor Admin
+participant "Auth Service" as AuthService
+participant "Azure AD" as AzureAD
+participant "Email Service" as EmailService
+participant "Enterprise App" as EnterpriseApp
+actor User
+
+group Admin Login
+    Admin -> AuthService: Login request
+    AuthService <-> AzureAD: Validate credentials
+    AuthService --> Admin: Provide access token
+end
+
+group Invite User
+    Admin -> AuthService: Send invite
+    AuthService -> AzureAD: Create/Verify user
+    AuthService -> EmailService: Send invitation
+    EmailService -> User: Receive invite
+end
+
+group Edit User Roles
+    Admin -> AuthService: Update roles
+    AuthService -> EnterpriseApp: Update roles
+    AuthService --> Admin: Confirm update
+end
+
+group Delete User
+    Admin -> AuthService: Delete user
+    AuthService -> EnterpriseApp: Remove user
+    AuthService -> AzureAD: Update group
+    AuthService --> Admin: Confirm deletion
+end
+
+group Register User
+    Admin -> AuthService: Register user
+    AuthService -> AzureAD: Create user
+    AuthService -> EmailService: Send welcome email
+end
+
+group Update User
+    Admin -> AuthService: Update user
+    AuthService -> AzureAD: Update info
+    AuthService --> Admin: Confirm update
+end
+
+@enduml

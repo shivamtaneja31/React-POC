@@ -1,0 +1,57 @@
+@startuml
+actor "Admin\n(JAXI React App)" as Admin
+participant "Auth Service" as AuthService
+participant "Azure AD" as AzureAD
+participant "Email Service" as EmailService
+participant "Enterprise App" as EnterpriseApp
+EnterpriseApp -[hidden]-> User
+actor User #FFFFFF
+
+note right of User    
+    User Information:
+    - FirstName
+    - LastName
+    - Email
+    - Role
+end note
+
+group Admin Login  
+  Admin -> AuthService: Login Request
+  AuthService <-> AzureAD: Validate Credentials
+  AuthService --> Admin: Provide Access Token
+  
+end
+
+group View Users  
+  Admin -> EnterpriseApp: Request Users List
+  EnterpriseApp -> AuthService: Fetch User Roles
+  AuthService <-> AzureAD: Get User Information
+  AuthService --> EnterpriseApp: Return Users List With Roles
+  EnterpriseApp --> Admin: Display Users List
+  
+end
+
+group Invite User  
+  Admin -> AuthService: Upload User Info
+  AuthService -> AzureAD: Verify User
+  AuthService -> EmailService: Send Invitation
+  EmailService -> User: User Receives Invitation
+  
+end
+
+group Edit User  
+  Admin -> AuthService: Edit User Info/Role
+  AuthService -> AzureAD: Update User Information
+  AuthService -> EnterpriseApp: Update User Role
+  AuthService --> Admin: Confirm Update
+  
+end
+
+group Delete User  
+  Admin -> AuthService: Delete User
+  AuthService -> EnterpriseApp: Remove User
+  AuthService --> Admin: Confirm Deletion
+  
+end
+
+@enduml

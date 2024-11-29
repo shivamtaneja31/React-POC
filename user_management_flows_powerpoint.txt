@@ -1,0 +1,33 @@
+User Management Flows (Concise for PowerPoint)
+
+1. Admin Login Flow
+   Admin → Auth Service: Login request
+   Auth Service → Azure AD: Validate credentials
+   Azure AD → Auth Service: Return token
+   Auth Service → Admin: Provide access token
+
+2. Invite Flow
+   a) Existing AD Member:
+      Admin → Auth Service: Invite existing member
+      Auth Service → Azure AD: Verify user
+      Auth Service → Email Service: Send invitation
+      Email Service → User: Deliver invitation
+
+   b) Guest User:
+      Admin → Auth Service: Invite guest user
+      Auth Service → Azure AD: Create guest entry
+      Auth Service → Email Service: Send invitation
+      Email Service → Guest User: Deliver invitation
+
+3. Admin Editing Roles
+   Admin → Auth Service: Update user roles
+   Auth Service → Azure AD: Verify user
+   Auth Service → Enterprise App: Update roles
+   Enterprise App → Auth Service: Confirm update
+   Auth Service → Admin: Confirm success
+
+4. Delete User Flow
+   Admin → Auth Service: Delete user request
+   Auth Service → Enterprise App: Remove user
+   Auth Service → Azure AD: Update app-specific group
+   Auth Service → Admin: Confirm user removal

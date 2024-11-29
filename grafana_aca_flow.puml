@@ -1,0 +1,46 @@
+@startuml
+actor Developer
+actor DevOpsTeam
+actor User
+
+participant "Azure Container Apps" as ACA
+participant "Application" as App
+participant "Azure Monitor" as AzureMonitor
+participant "Grafana" as Grafana
+participant "Jaxi React App" as MFE
+
+Developer -> ACA: Deploy Grafana
+note right: Containerized deployment
+
+group Log Generation and Streaming
+    App -> App: Generate logs (STDOUT)
+    App -> AzureMonitor: Stream logs
+    AzureMonitor -> AzureMonitor: Collect and analyze logs
+end
+
+group Grafana Integration
+    Grafana -> AzureMonitor: Connect as data source
+    Grafana -> Grafana: Create custom dashboards
+end
+
+group User Interaction
+    User -> MFE: Login & Access Application
+    MFE -> Grafana: Embed dashboards
+    User -> MFE: View Grafana insights
+end
+
+group Continuous Monitoring
+    DevOpsTeam -> Grafana: Monitor application performance
+    Developer -> App: Push code updates
+    App -> AzureMonitor: Generate new logs
+    AzureMonitor -> Grafana: Update metrics
+    Grafana -> DevOpsTeam: Display real-time data
+end
+
+note right of DevOpsTeam
+  Integrated Dev and DevOps Single Flow:
+  - Continuous development and monitoring
+  - Real-time log generation and analysis
+  - Seamless integration between components
+end note
+@enduml
